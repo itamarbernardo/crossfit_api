@@ -13,6 +13,7 @@ class Atleta(BaseSchema):
     altura: Annotated[PositiveFloat, Field(description='Altura do atleta', example=1.70)]
     sexo: Annotated[str, Field(description='Sexo do atleta', example='M', max_length=1)]
     categoria: Annotated[CategoriaIn, Field(description='Categoria do atleta')]
+    #Colocamos esse CentroTreinamentoAtleta pra permitir passar só o nome do CT
     centro_treinamento: Annotated[CentroTreinamentoAtleta, Field(description='Centro de treinamento do atleta')]
 
 
@@ -25,5 +26,6 @@ class AtletaOut(Atleta, OutMixin):
 
 
 class AtletaUpdate(BaseSchema):
+    #Pode atualizar apenas a idade ou o nome, ou ambos 
     nome: Annotated[Optional[str], Field(None, description='Nome do atleta', example='Joao', max_length=50)]
     idade: Annotated[Optional[int], Field(None, description='Idade do atleta', example=25)]

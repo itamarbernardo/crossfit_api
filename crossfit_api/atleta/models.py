@@ -16,6 +16,7 @@ class AtletaModel(BaseModel):
     altura: Mapped[float] = mapped_column(Float, nullable=False)
     sexo: Mapped[str] = mapped_column(String(1), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    #lazy='selectin' é pra unir as tabelas das foreing keys e poder mostrar as informações
     categoria: Mapped['CategoriaModel'] = relationship(back_populates="atleta", lazy='selectin')
     categoria_id: Mapped[int] = mapped_column(ForeignKey("categorias.pk_id"))
     centro_treinamento: Mapped['CentroTreinamentoModel'] = relationship(back_populates="atleta", lazy='selectin')
