@@ -1,0 +1,3 @@
+from crossfit_api.categorias.models import CategoriaModel
+from crossfit_api.centro_treinamento.models import CentroTreinamentoModel
+from crossfit_api.atleta.models import AtletaModel

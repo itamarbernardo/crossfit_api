@@ -1,0 +1,10 @@
+version: "3"
+services:
+  db:
+    image: postgres:11
+    environment:
+      - POSTGRES_PASSWORD: 1234
+      - POSTGRES_USER: admin
+      - POSTGRES_DB: crossfit_db
+    ports:
+      - "5433:5432"
