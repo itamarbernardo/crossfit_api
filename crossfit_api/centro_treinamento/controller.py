@@ -6,6 +6,7 @@ from crossfit_api.centro_treinamento.models import CentroTreinamentoModel
 
 from crossfit_api.contrib.dependencies import DatabaseDependency
 from sqlalchemy.future import select
+from sqlalchemy.exc import IntegrityError
 
 router = APIRouter()
 
@@ -19,14 +20,25 @@ async def post(
     db_session: DatabaseDependency, 
     centro_treinamento_in: CentroTreinamentoIn = Body(...)
 ) -> CentroTreinamentoOut:
-    centro_treinamento_out = CentroTreinamentoOut(id=uuid4(), **centro_treinamento_in.model_dump())
-    centro_treinamento_model = CentroTreinamentoModel(**centro_treinamento_out.model_dump())
-    
-    db_session.add(centro_treinamento_model)
-    await db_session.commit()
+    try:
+        centro_treinamento_out = CentroTreinamentoOut(id=uuid4(), **centro_treinamento_in.model_dump())
+        centro_treinamento_model = CentroTreinamentoModel(**centro_treinamento_out.model_dump())
+        
+        db_session.add(centro_treinamento_model)
+        await db_session.commit()
 
-    return centro_treinamento_out
-    
+        return centro_treinamento_out
+    except IntegrityError:
+        print('Erro de integridade')
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f'Já existe um centro de treinamento com o nome: {centro_treinamento_model.nome}'
+        )       
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail='Ocorreu um erro ao inserir os dados no banco'
+        )    
     
 @router.get(
     '/', 

@@ -3,8 +3,9 @@ from typing import Optional
 from uuid import uuid4
 from fastapi import APIRouter, Body, HTTPException, status
 from pydantic import UUID4
+from sqlalchemy.exc import IntegrityError
 
-from crossfit_api.atleta.schemas import AtletaIn, AtletaOut, AtletaUpdate
+from crossfit_api.atleta.schemas import AtletaIn, AtletaOut, AtletaUpdate, AtletaOutReturn
 from crossfit_api.atleta.models import AtletaModel
 from crossfit_api.categorias.models import CategoriaModel
 from crossfit_api.centro_treinamento.models import CentroTreinamentoModel
@@ -57,6 +58,11 @@ async def post(
         
         db_session.add(atleta_model)
         await db_session.commit()
+    except IntegrityError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f'Já existe um atleta cadastrado com o cpf: {atleta_model.cpf}'
+        )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -81,11 +87,11 @@ async def query(db_session: DatabaseDependency, cpf: Optional[str] = None, nome:
         query = query.where(AtletaModel.nome.ilike(f'%{nome}%'))
 
     result = await db_session.execute(query)
-    atletas: list[AtletaOut] = result.scalars().all()
+    atletas: list[AtletaOutReturn] = result.scalars().all()
     
     # atletas: list[AtletaOut] = (await db_session.execute(select(AtletaModel))).scalars().all()
     
-    return [AtletaOut.model_validate(atleta) for atleta in atletas]
+    return [AtletaOutReturn.model_validate(atleta) for atleta in atletas]
 
 
 @router.get(
