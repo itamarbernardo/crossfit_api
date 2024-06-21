@@ -30,7 +30,6 @@ async def post(
         return categoria_out
     
     except IntegrityError:
-        print('Erro de integridade')
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail=f'Já existe uma categoria com o nome: {categoria_model.nome}'

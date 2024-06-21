@@ -29,7 +29,6 @@ async def post(
 
         return centro_treinamento_out
     except IntegrityError:
-        print('Erro de integridade')
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail=f'Já existe um centro de treinamento com o nome: {centro_treinamento_model.nome}'
