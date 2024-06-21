@@ -5,7 +5,7 @@ from fastapi import APIRouter, Body, HTTPException, status
 from pydantic import UUID4
 from sqlalchemy.exc import IntegrityError
 
-from crossfit_api.atleta.schemas import AtletaIn, AtletaOut, AtletaUpdate, AtletaOutReturn
+from crossfit_api.atleta.schemas import AtletaIn, AtletaOut, AtletaUpdate
 from crossfit_api.atleta.models import AtletaModel
 from crossfit_api.categorias.models import CategoriaModel
 from crossfit_api.centro_treinamento.models import CentroTreinamentoModel
@@ -87,11 +87,11 @@ async def query(db_session: DatabaseDependency, cpf: Optional[str] = None, nome:
         query = query.where(AtletaModel.nome.ilike(f'%{nome}%'))
 
     result = await db_session.execute(query)
-    atletas: list[AtletaOutReturn] = result.scalars().all()
+    atletas: list[AtletaOut] = result.scalars().all()
     
     # atletas: list[AtletaOut] = (await db_session.execute(select(AtletaModel))).scalars().all()
     
-    return [AtletaOutReturn.model_validate(atleta) for atleta in atletas]
+    return [AtletaOut.model_validate(atleta) for atleta in atletas]
 
 
 @router.get(
